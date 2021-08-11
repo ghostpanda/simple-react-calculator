@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { Button, ButtonBackgroundColor } from "./Button";
 import { Command } from "../logic/Calculator";
 import { Display } from "./Display";
+import { useEffect } from "react";
 
 type ComponentProps = {
   onCalculate: (input: string) => void;
@@ -13,7 +14,12 @@ type ComponentProps = {
   selectedCommand: string;
 };
 
-export const ReactCalculator: React.VFC = () => {
+type Props = {
+  initialValue?: string | number;
+  onEqual?: (result: number) => void
+}
+
+export const ReactCalculator: React.VFC<Props> = (props) => {
   const {
     value,
     isClearable,
@@ -23,9 +29,20 @@ export const ReactCalculator: React.VFC = () => {
     onAllClear,
   } = useCalculate();
 
+  useEffect(() => {
+    if (props.initialValue) String(props.initialValue).split('').map(onCalculate)
+  }, [])
+
+  const calculate = (input: string) => {
+    const reuslt = onCalculate(input)
+    if (input === Command.Equal && props.onEqual) {
+      props.onEqual(Number(reuslt))
+    }
+  }
+
   return (
     <CalculatorComponent
-      onCalculate={(input: string) => onCalculate(input)}
+      onCalculate={calculate}
       onClear={() => onClear()}
       onAllClear={() => onAllClear()}
       isClearable={isClearable}

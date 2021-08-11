@@ -19,6 +19,7 @@ export const useCalculate = () => {
 
     const num = calculator.calculate(input);
     setValue(num);
+    return num;
   };
 
   const onClear = () => {

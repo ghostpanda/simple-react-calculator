@@ -102,6 +102,12 @@ export class Calculator {
   }
 
   private handleBasicOperation(value: string): string {
+    if (isCommand(this.prevInputValue)) {
+      this.updatePreviousInputValue(value);
+      this.updatePreviousCommand(value);
+      return this.currentDisplayNumber;
+    }
+  
     const result =
       this.isFirstInput() || this.isAfterPressingEqual()
         ? this.currentDisplayNumber
@@ -118,18 +124,27 @@ export class Calculator {
   }
 
   private handleEqualOperation(value: string): string {
+    if (isCommand(this.prevInputValue)) {
+      this.updatePreviousInputValue(value);
+      this.updatePreviousCommand('');
+    }
+  
     if (!this.prevCommand && this.prevDisplayNumber === "0") {
       return this.currentDisplayNumber;
     }
 
     if (!this.prevCommand) return this.prevDisplayNumber;
 
-    this.updatePreviousInputValue(value);
-    return this.calculateInner(
+    const result = this.calculateInner(
       this.prevCommand,
       this.prevDisplayNumber,
       this.currentDisplayNumber
     );
+
+    this.updatePreviousDisplayNumber(result);
+    this.updatePreviousInputValue(value);
+    this.updatePreviousCommand('');
+    return result;
   }
 
   private calculateInner(
